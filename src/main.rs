@@ -8,7 +8,12 @@ use std::{
 fn get_all_filenames(path: &str) -> Vec<String> {
     return fs::read_dir(path)
         .unwrap()
-        .map(|x| x.unwrap().path().display().to_string())
+        .map(|x| {
+            x.unwrap()
+                .file_name()
+                .into_string()
+                .unwrap_or("unreadable".into())
+        })
         .collect();
 }
 
@@ -54,10 +59,15 @@ fn extract_leading_number_test() {
 
 #[test]
 fn sort_files_by_leading_number_test() {
-    let mut data: Vec<String> = vec!["1.rs".into(), "3.rs".into(), "2.rs".into()];
+    let mut data: Vec<String> = vec!["1.rs".into(), "3.rs".into(), "2.rs".into(), "100.rs".into()];
     sort_files_by_leading_number(&mut data);
     assert_eq!(
         data,
-        vec!["1.rs".to_string(), "2.rs".to_string(), "3.rs".to_string()]
+        vec![
+            "1.rs".to_string(),
+            "2.rs".to_string(),
+            "3.rs".to_string(),
+            "100.rs".to_string()
+        ]
     );
 }
